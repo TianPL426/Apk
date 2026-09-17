@@ -2,39 +2,33 @@
 
 ## Current Stage
 
-Stage 1 — Minimal Windows API Server (Complete; Awaiting Stage 2 Confirmation)
+Stage 1 — Minimal Windows API Server (Completed)
 
 ## Current Goal
 
-Stage 1 is complete. Keep the validated FastAPI `/health` service available and wait for explicit confirmation before entering Stage 2.
+Preserve the validated Stage 1 deployment baseline and wait for explicit user confirmation before entering Stage 2.
 
 ## Completed
 
-- Read `AGENTS.md`, `SYSTEM_DESIGN.md`, and `ROADMAP.md`.
-- Initialized the project folder as a Git repository.
-- Completed Stage 0 based on the user's end-to-end validation:
-  - Tailscale is installed, signed in, and starts with Windows.
-  - Tailscale Funnel is enabled and forwards to `http://127.0.0.1:8000`.
-  - The public HTTPS address is `https://pc-20260527girh.taila980ab.ts.net`.
-  - The Android phone successfully reached `/health` through the Funnel with its existing VPN both enabled and disabled.
-  - The validated response was `{"status":"ok","message":"PC backend is running"}`.
-- Located the previous test service at `C:\AI-Assistant-Test\server.py` and confirmed it used Python's standard-library `BaseHTTPServer`, not FastAPI.
-- Created the Stage 1 FastAPI project in this repository:
-  - `server.py` contains only `GET /health`.
-  - `requirements.txt` pins FastAPI 0.141.1 and Uvicorn 0.53.0.
-  - `.venv314` uses the installed system Python 3.14.5.
-- Replaced the currently running port 8000 process with Uvicorn/FastAPI without changing Tailscale or Funnel.
-- Validated the current service:
-  - Local `GET http://127.0.0.1:8000/health` returned HTTP 200 with the expected JSON and `Server: uvicorn`.
-  - Local OpenAPI contains only `/health`.
-  - Funnel `GET https://pc-20260527girh.taila980ab.ts.net/health` returned HTTP 200 with the expected JSON and `Server: uvicorn`.
-  - The user confirmed that the Android phone successfully reached the current FastAPI `/health` endpoint through the Funnel.
-- Completed Stage 1 without adding SQLite, AI, Android notification capture, or business endpoints.
+- Read and followed `AGENTS.md`, `SYSTEM_DESIGN.md`, and `ROADMAP.md`.
+- Initialized the project as a Git repository and preserved the Stage 0/1 milestone in Git.
+- Completed Stage 0 connectivity validation.
+- Completed Stage 1 with a minimal FastAPI application exposing only `GET /health`.
+- Completed final Stage 1 acceptance on the user's real Windows PC:
+  - Project directory: `E:\AI-Assistant-Android`
+  - Internal FastAPI address: `http://127.0.0.1:8000`
+  - Health response: `{"status":"ok","message":"PC backend is running"}`
+  - Windows task `AI Assistant Backend` successfully starts the formal FastAPI service after a computer restart.
+  - Tailscale starts with Windows.
+  - Tailscale Funnel recovers successfully after a computer restart.
+  - Canonical public Base URL: `https://pc-20260527girh.taila980ab.ts.net:10000`
+  - The Android phone can access `/health` while its Tailscale connection is disabled.
+  - The phone's existing VPN being enabled or disabled does not affect access.
+- Confirmed that Stage 1 contains no SQLite business tables, AI logic, Android notification capture, or Stage 2 message endpoints.
 
 ## In Progress
 
-- No automated development work is in progress.
-- The user will manually update the existing `AI Assistant Backend` boot task as a separate operational item.
+- No work is in progress.
 
 ## Not Started
 
@@ -45,34 +39,22 @@ Stage 1 is complete. Keep the validated FastAPI `/health` service available and 
 
 ## Known Issues
 
-- The current FastAPI process is running, but the existing boot task still points to `C:\AI-Assistant-Test\server.py`.
-- Updating the existing task while preserving its stored-password login failed because Windows rejected the saved credentials.
-- Do not change the task to S4U and do not run it as `SYSTEM`; the backend will later require normal external network/API access.
-- The repository contains `AI-Assistant—Android.lnk`, but its target is unrelated to the described Python service; it will not be executed or modified during Stage 1.
+- External ports 443 and 8443 timed out in the current mobile network environment and are not supported deployment addresses.
 - The Funnel is publicly reachable. Stage 1 exposes only a non-sensitive health response; future business endpoints must not be exposed without authentication and an explicit security design.
 
 ## Important Decisions
 
-- Preserve the verified Tailscale and Funnel configuration unchanged.
-- The Android APK will later use the Funnel HTTPS address and does not need to keep the Tailscale client connected.
-- Stage 1 is limited to a minimal FastAPI service and `GET /health`.
-- Reuse the existing `AI Assistant Backend` boot task rather than creating a second competing startup entry.
-- The user will manually update the existing task while preserving its current user/password-based execution mode.
-- No database, AI, Android project, notification capture, or business logic will be added in Stage 1.
-
-## Manual Startup Task
-
-In Windows Task Scheduler, edit the existing `AI Assistant Backend` task action to use:
-
-- Program/script: `E:\AI-Assistant—Android\.venv314\Scripts\python.exe`
-- Add arguments: `-m uvicorn server:app --host 127.0.0.1 --port 8000`
-- Start in: `E:\AI-Assistant—Android`
-
-Keep the task's existing user/password-based execution mode. Do not select S4U or `SYSTEM`.
+- The canonical Windows project directory is `E:\AI-Assistant-Android`.
+- The canonical mobile/API Base URL is `https://pc-20260527girh.taila980ab.ts.net:10000`.
+- Funnel traffic terminates at the internal FastAPI service on `127.0.0.1:8000`.
+- Port 10000 is the only supported external mobile port for the current deployment; do not use 443 or 8443.
+- The Android client does not need to keep Tailscale connected and should use the canonical HTTPS Funnel Base URL.
+- Preserve the verified Tailscale, Funnel, FastAPI, and Windows task configuration unless a later test demonstrates a problem.
+- Do not begin Stage 2 without explicit user confirmation.
 
 ## Next Step
 
-The user should manually update and test the existing boot task using the documented action fields. After that operational item, wait for explicit user confirmation before beginning Stage 2.
+Wait for explicit user confirmation to begin Stage 2. Before exposing Stage 2 message endpoints through the public Funnel, decide whether they will remain local-only during testing or be protected by device authentication.
 
 ## Last Updated
 
