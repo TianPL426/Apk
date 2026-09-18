@@ -2,11 +2,12 @@
 
 ## Current Stage
 
-Stage 3 — Android Notification Capture and Durable Upload (Implementation Complete; Real-Device Acceptance Pending)
+Stage 3 — Android Notification Capture and Durable Upload (Real-Device Acceptance Passed / Complete)
 
 ## Current Goal
 
-Validate this path on the user's Android phone and real Windows deployment:
+Preserve the completed Stage 3 baseline. The user confirmed real-device acceptance
+on 2026-09-19 for the Android-to-Windows notification pipeline:
 
 ```text
 new Android notification
@@ -62,6 +63,26 @@ Do not begin Stage 4.
 - Generated a debug APK at `app/build/outputs/apk/debug/app-debug.apk`
   (build output is intentionally excluded from Git).
 
+## Stage 3 Real-Device Acceptance — 2026-09-19
+
+Status: **Real-Device Acceptance Passed / Complete**, based on the user's
+explicit acceptance and the following user-reported observations:
+
+- APK installed and launched normally on the physical Android phone.
+- Notification Access: enabled.
+- Capture new notifications: working; real notifications were captured.
+- Tailscale Funnel connected successfully to Windows FastAPI.
+- Token authentication succeeded; Connection Test displayed `success`.
+- Captured messages uploaded automatically to Windows; Uploaded increased.
+- Windows `/api/messages` worked normally.
+- SQLite received real notification messages.
+- Background notification capture and upload worked normally.
+
+The detailed physical-device results above are user-reported, not a new
+agent-run test. Earlier automated evidence for queue persistence, offline
+recovery, deduplication and restart behavior is retained below; this closeout
+does not invent additional individual real-device test results.
+
 ## Stage 3 Automated Validation
 
 - Android JUnit/Robolectric queue suite: **7 tests passed**.
@@ -105,11 +126,7 @@ Do not begin Stage 4.
 
 ## In Progress
 
-- Real-device Stage 3 acceptance on the user's Android phone.
-- Confirm the Windows service process has `ASSISTANT_MESSAGE_API_TOKEN` set and
-  enter the matching value in the app.
-- Validate real notification capture and online/offline recovery through the
-  canonical Funnel endpoint.
+- None. Stage 3 is complete; no feature implementation is in progress.
 
 ## Not Started
 
@@ -120,10 +137,10 @@ Do not begin Stage 4.
 
 ## Known Issues
 
-- No Android device is attached to this Codex workspace. Automated tests cover
-  the A–H queue/retry requirements, but real `NotificationListenerService`,
-  process-kill, network-toggle, and phone-to-Funnel behavior still require the
-  user's physical phone before Stage 3 can be marked Completed.
+- Non-blocking UI issue: Pending / Uploaded counts do not refresh in real time;
+  the latest values may appear only after a page refresh or Connection Test.
+  Background capture and upload are working normally. Record this as a future
+  UI improvement only; no fix is included in this closeout.
 - The public Funnel remains reachable. `/api/messages` stays disabled with
   HTTP 503 unless the Windows process has `ASSISTANT_MESSAGE_API_TOKEN`; an
   incorrect or missing request token returns HTTP 401.
@@ -155,11 +172,40 @@ Do not begin Stage 4.
 
 ## Next Step
 
-Install the generated debug APK on the physical Android phone, configure the
-canonical HTTPS Base URL and matching token, grant Notification Access, and
-perform the real-device A–H acceptance checklist. After the user confirms all
-items, mark Stage 3 Completed in `STATUS.md`. Do not begin Stage 4.
+Keep the accepted Stage 3 baseline. Wait for explicit user instructions before
+defining or starting Stage 4. The non-blocking counter refresh improvement is
+deferred and is not authorization to change functionality.
+
+## Real Windows APK Build — 2026-09-18
+
+- Verified clean `master` at `92a2179` before building in
+  `E:\AI-Assistant-Android`.
+- Built from this checkout with its Gradle 8.13 Wrapper, JDK 17.0.20.1,
+  Android SDK 35, and Build Tools 35.0.0. No business source changes.
+- `assembleDebug`: BUILD SUCCESSFUL. APK signature verification: passed (v2).
+- APK: `E:\AI-Assistant-Android\app\build\outputs\apk\debug\app-debug.apk`.
+- Package: `com.tianpl.aiassistant`; version 0.3.0; minimum API 26;
+  target API 35; size 2,990,894 bytes.
+- SHA-256: `06AD14242A6BCE1C60D2ED89E4513E700DB0104D4D4DC1669F36F44F39131FEA`.
+- Local environment workarounds, all ignored by Git:
+  - `.tools/android-sdk` is a junction to the existing SDK in the older
+    `E:\AI-Assistant—Android` checkout, avoiding AAPT's non-ASCII path issue.
+  - `.tools/cached-maven` and `.tools/cached-deps.init.gradle` expose existing
+    dependency files for offline builds after Maven Central Java TLS failed.
+  - The build sets `jdk.net.unixdomain.tmpdir` to a nonexistent directory so
+    JDK local pipes fall back to TCP instead of failing Unix-domain connect.
+  - Rebuild in PowerShell with `& .\.tools\build-debug.ps1`.
+    This local helper still depends on the old checkout's JDK, SDK and Gradle
+    cache; preserve that directory until the tools are relocated.
+- Remaining non-fatal warnings: SDK XML tool-version mismatch and deprecated
+  `getParcelableArray` usage. Neither blocked APK generation.
+- `adb devices -l`: no attached device. This run validated packaging and
+  signing; it did not rerun the earlier unit/server suites or validate phone
+  behavior. Windows Stage 0-2 source and runtime configuration were untouched.
+- At build time, physical-device acceptance was pending. The user subsequently
+  confirmed Stage 3 completion on 2026-09-19, as recorded above. Stage 4 remains
+  unstarted.
 
 ## Last Updated
 
-2026-09-18
+2026-09-19
