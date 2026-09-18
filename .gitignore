@@ -7,3 +7,12 @@ data/
 *.db-shm
 *.db-wal
 .env
+.tools/
+.gradle/
+.kotlin/
+.idea/
+**/build/
+local.properties
+*.iml
+*.jks
+*.keystore

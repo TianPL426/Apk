@@ -97,56 +97,60 @@ A test message sent to the server can be saved and queried later.
 
 ---
 
-## Stage 3 — Minimal Android APK
+## Stage 3 — Android Notification Capture and Durable Upload
 
 ### Goal
 
-Create an APK that can manually send a test message to the Windows server.
+Reliably move new Android notifications through a durable phone-side queue to
+the Windows raw-message database.
 
 ### Main Tasks
 
 - Create Android project in Kotlin.
-- Add server address configuration.
-- Add a simple text field and send button.
-- Send one test message to `POST /api/messages`.
-- Display success or failure.
+- Add `NotificationListenerService` for notifications posted after capture is
+  enabled; do not read notification history.
+- Add a capture master switch, server address, token, connection test, and
+  pending/uploaded counters.
+- Persist every captured notification in a local Room queue before uploading.
+- Upload to `POST /api/messages` with `X-Assistant-Token`.
+- Retry pending messages after network/server failures and after process
+  restarts.
+- Add stable client message IDs and server-side idempotent deduplication.
+- Retain only a minimal local receipt after confirmed upload.
 
 ### Completion Standard
 
-Typing a message into the APK results in the message appearing in the PC database.
+Real-device validation confirms capture, save-before-send, online upload,
+offline persistence, recovery retry, deduplication, capture-switch behavior,
+and persistence across an app/process restart.
 
 ### Do Not Implement Yet
 
-- notification listener
+- source app, group, or contact filtering
 - AI
-- task page
+- tasks or source rules
 - reminder system
 
 ---
 
-## Stage 4 — Android Notification Capture
+## Stage 4 — Scope To Be Reconfirmed
 
 ### Goal
 
-Automatically capture available Android notifications and send them to the PC.
+Do not begin Stage 4 until the user explicitly defines or confirms its scope.
+The original notification-capture scope was explicitly absorbed into Stage 3.
 
 ### Main Tasks
 
-- Add `NotificationListenerService`.
-- Request notification access from the user.
-- Capture basic metadata.
-- Send notifications to the Windows server.
-- Handle duplicate notifications.
+- To be confirmed after Stage 3 real-device acceptance.
 
 ### Completion Standard
 
-A real supported notification can appear in the Windows raw message database without manual input.
+- To be confirmed.
 
 ### Do Not Implement Yet
 
-- AI task extraction
-- automatic replies
-- messaging app control
+- Any Stage 4 implementation without explicit approval.
 
 ---
 
